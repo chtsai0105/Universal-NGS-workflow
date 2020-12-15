@@ -1,0 +1,10 @@
+*
+!.gitignore
+
+!bin
+!*.bash
+!*.py
+!*.md
+!conda_env.yml
+
+!metadata.csv
