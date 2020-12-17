@@ -45,7 +45,7 @@ def main():
     plt.gca().xaxis.grid(True, lw=0.5)
     plt.plot(df[0], df[1], linestyle=None, color='#FF0000')
     plt.xlim(0, is_max)
-    plt.ylim(bottom=0)
+    plt.ylim(0, 250000)
     plt.xlabel('Insert Size', fontsize=16)
     plt.ylabel('Count', fontsize=16)
     ax.fill_between(df[0], df[1], interpolate=True, color='#FF0000', edgecolor=None)
