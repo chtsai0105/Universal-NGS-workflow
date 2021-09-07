@@ -1,0 +1,25 @@
+---
+class: bowtie2
+program: bowtie2-index
+
+genome: {{ working_dir }}/data/ref/genome.fa
+index: {{ working_dir }}/data/bowtie2/bt2-idx
+
+threads: 1
+{% if use_slurm == True %}
+ntasks: 1
+mem: 10gb
+{% endif %}
+---
+class: bowtie2
+program: bowtie2-{{ layout }}
+
+input_dir: {{ working_dir }}/data/raw
+output_dir: {{ working_dir }}/data/bowtie2
+index: {{ working_dir }}/data/bowtie2/bt-idx
+
+threads: 1
+{% if use_slurm == True %}
+ntasks: 1
+mem: 10gb
+{% endif %}

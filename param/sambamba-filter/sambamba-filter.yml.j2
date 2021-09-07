@@ -1,0 +1,11 @@
+class: sambamba-filter
+program: sambamba-filter
+
+input_dir: {{ working_dir }}/data/bowtie2
+output_dir: {{ working_dir }}/data/bowtie2
+
+threads: 1
+{% if use_slurm == True %}
+ntasks: 1
+mem: 10gb
+{% endif %}

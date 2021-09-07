@@ -1,0 +1,14 @@
+class: trimmomatic
+program: trimmomatic-{{ layout }}
+
+input_dir: {{ working_dir }}/data/raw
+output_dir: {{ working_dir }}/data/trimmed
+{% if layout == 'pe' %}
+unpaired_dir: {{ working_dir }}/data/trimmed/unpaired
+{% endif %}
+
+threads: 1
+{% if use_slurm == True %}
+ntasks: 1
+mem: 10gb
+{% endif %}

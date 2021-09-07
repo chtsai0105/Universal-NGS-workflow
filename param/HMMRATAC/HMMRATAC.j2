@@ -1,0 +1,11 @@
+class: HMMRATAC
+program: HMMRATAC
+
+input_dir: {{ working_dir }}/data/bowtie2
+output_dir: {{ working_dir }}/results/HMMRATAC
+
+threads: 1
+{% if use_slurm == True %}
+ntasks: 1
+mem: 32gb
+{% endif %}

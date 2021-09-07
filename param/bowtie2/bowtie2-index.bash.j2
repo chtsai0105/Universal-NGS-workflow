@@ -1,0 +1,23 @@
+#!/bin/bash
+{% if use_slurm == True %}
+#SBATCH --job-name={{ program }}
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task={{ threads }}
+#SBATCH --mem={{ mem }}
+#SBATCH --output=sbatch_log/%x_%A.out
+{% endif %}
+
+
+GENOME={{ genome }}
+INDEX={{ index }}
+
+THREADS={{ threads }}
+
+# Generate decoy-aware salmon index
+if [ -z compgen -G $INDEX.*.bt2) ]
+then
+    # Build index
+    echo "Build index ..."
+    mkdir $(dirname $INDEX)
+    bowtie2-build --threads $THREADS $GENOME $INDEX
+fi

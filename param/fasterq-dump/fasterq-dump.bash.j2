@@ -1,0 +1,30 @@
+#!/bin/bash
+{% if use_slurm == True %}
+#SBATCH --job-name={{ program }}
+#SBATCH --ntasks={{ ntasks }}
+#SBATCH --cpus-per-task={{ threads }}
+#SBATCH --mem={{ mem }}
+#SBATCH --array=1-{{ total_tasks }}%{{ ntasks }}
+#SBATCH --output=sbatch_log/%x_%A_%a.out
+{% endif %}
+
+METADATA={{ metadata }}
+OUTPUT_DIR={{ output_dir }}
+
+THREADS={{ threads }}
+
+mkdir -p $OUTPUT_DIR
+
+# Download data by sra-tools
+sed -n '{{ line_start }},$p' $METADATA | \
+{% if use_slurm == True %}sed -n '$SLURM_ARRAY_TASK_ID{p;q;}' $METADATA | \{% endif %}
+while IFS="," read Accession R1 R2 Strain Condition Replicate
+do
+    if [ -f $OUTPUT_DIR/${Accession}* ]
+    then
+        echo $Accession is already downloaded
+    else
+        echo "Downloading $Accession ..."
+        fasterq-dump $Accession -O $OUTPUT_DIR -t /dev/shm -e $THREADS
+    fi
+done

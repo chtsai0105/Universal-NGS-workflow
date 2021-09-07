@@ -1,0 +1,11 @@
+class: fastqc
+program: fastqc
+
+input_dir: {{ working_dir }}/data/raw
+output_dir: {{ working_dir }}/results/fastqc_raw
+
+threads: 1
+{% if use_slurm == True %}
+ntasks: 1
+mem: 10gb
+{% endif %}

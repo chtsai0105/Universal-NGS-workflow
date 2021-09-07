@@ -1,0 +1,37 @@
+#!/bin/bash
+{% if use_slurm == True %}
+#SBATCH --job-name={{ program }}
+#SBATCH --ntasks={{ ntasks }}
+#SBATCH --cpus-per-task={{ threads }}
+#SBATCH --mem={{ mem }}
+#SBATCH --array=1-{{ total_tasks }}%{{ ntasks }}
+#SBATCH --output=sbatch_log/%x_%A_%a.out
+{% endif %}
+
+THREADS=1
+INPUT_DIR={{ input_dir }}
+OUTPUT_DIR={{ output_dir }}
+mkdir -p $OUTPUT_DIR
+
+# Run sambamba
+sed -n '{{ line_start }},$p' $METADATA | \
+{% if use_slurm == True %}sed -n '$SLURM_ARRAY_TASK_ID{p;q;}' $METADATA | \{% endif %}
+while IFS="," read Accession R1 R2 Strain Condition Replicate
+do
+	sample=`echo $Strain $Condition $Replicate | tr ' ' '_'`
+	sorted_bam="$sample.sorted.bam"
+	final_bam="$sample.final.bam"
+	log="$sample.markdup.log"
+
+	echo "Processing $sample ..."
+	# markup duplicates from BAM
+	sambamba markdup -t $THREADS $INPUT_DIR/$sorted_bam /dev/stdout 2> $OUTPUT_DIR/$log | \
+
+	# Filter the reads with conditions whthin braket
+	sambamba view -f bam -o $OUTPUT_DIR/$final_bam -t $THREADS \
+	-F "proper_pair and not duplicate and mapping_quality >= 30" \
+	/dev/stdin
+
+	# Build index for BAM
+	sambamba index -t $THREADS $OUTPUT_DIR/$final_bam
+done

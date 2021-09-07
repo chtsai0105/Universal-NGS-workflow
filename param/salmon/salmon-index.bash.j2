@@ -1,0 +1,30 @@
+#!/bin/bash
+{% if use_slurm == True %}
+#SBATCH --job-name={{ program }}
+#SBATCH --ntasks={{ ntasks }}
+#SBATCH --cpus-per-task={{ threads }}
+#SBATCH --mem={{ mem }}
+#SBATCH --array=1-{{ total_tasks }}%{{ ntasks }}
+#SBATCH --output=sbatch_log/%x_%A_%a.out
+{% endif %}
+
+GENOME={{ genome }}
+TXTOME={{ txtome }}
+
+THREADS={{ threads }}
+INDEX={{ index }}
+
+# Generate decoy-aware salmon index
+if [ ! -d $INDEX ]
+then
+    # Generate genomic decoy
+    REF_DIR=$(dirname $GENOME)
+    echo "Generate genomic decoy ..."
+    grep "^>" <(gunzip -c $GENOME) | cut -d " " -f 1 > $REF_DIR/decoys.txt
+    sed -i.bak -e 's/>//g' $REF_DIR/decoys.txt
+    cat $TXTOME $GENOME > $REF_DIR/gentrome.fa.gz
+
+    # Build index
+    echo "Build index ..."
+    salmon index -t $REF_DIR/gentrome.fa.gz -d $REF_DIR/decoys.txt -p $THREADS -i $INDEX
+fi

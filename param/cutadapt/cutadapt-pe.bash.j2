@@ -1,0 +1,33 @@
+#!/bin/bash
+{% if use_slurm == True %}
+#SBATCH --job-name={{ program }}
+#SBATCH --ntasks={{ ntasks }}
+#SBATCH --cpus-per-task={{ threads }}
+#SBATCH --mem={{ mem }}
+#SBATCH --array=1-{{ total_tasks }}%{{ ntasks }}
+#SBATCH --output=sbatch_log/%x_%A_%a.out
+{% endif %}
+
+METADATA={{ metadata }}
+INPUT_DIR={{ input_dir }}
+OUTPUT_DIR={{ output_dir }}
+
+THREADS={{ threads }}
+
+mkdir -p $OUTPUT_DIR
+
+sed -n '{{ line_start }},$p' $METADATA | \
+{% if use_slurm == True %}sed -n '$SLURM_ARRAY_TASK_ID{p;q;}' $METADATA | \{% endif %}
+while IFS="," read Accession R1 R2 Strain Condition Replicate
+do
+    in1=$INPUT_DIR/$R1
+    in2=$INPUT_DIR/$R2
+    out1=$OUTPUT_DIR/$R1
+    out2=$OUTPUT_DIR/$R2
+    cutadapt    {%-if adapter_3prime_R1 != None -%}-a {{ adapter_3prime_R1 }} \{% endif %}
+                {%-if adapter_5prime_R1 != None -%}-g {{ adapter_5prime_R1 }} \{% endif %}
+                {%-if adapter_3prime_R2 != None -%}-A {{ adapter_3prime_R2 }} \{% endif %}
+                {%-if adapter_5prime_R2 != None -%}-G {{ adapter_5prime_R2 }} \{% endif %}
+                {%-if params != None -%}{{ params }} \{% endif %}
+                -j $THREADS -o $out1 -p $out2 $in1 $in2
+done

@@ -1,0 +1,26 @@
+---
+class: salmon
+program: salmon-index
+
+genome: {{ working_dir }}/data/ref/genome.fa
+txtome: {{ working_dir }}/data/ref/txtome.fa
+index: {{ working_dir }}/data/salmon/salmon-idx
+
+threads: 1
+{% if use_slurm == True %}
+ntasks: 1
+mem: 10gb
+{% endif %}
+---
+class: salmon
+program: salmon-{{ layout }}
+
+input_dir: {{ working_dir }}/data/raw
+output_dir: {{ working_dir }}/data/salmon
+index: {{ working_dir }}/data/salmon/salmon-idx
+
+threads: 1
+{% if use_slurm == True %}
+ntasks: 1
+mem: 10gb
+{% endif %}

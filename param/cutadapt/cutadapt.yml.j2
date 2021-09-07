@@ -1,0 +1,19 @@
+class: cutadapt
+program: cutadapt-{{ layout }}
+
+input_dir: {{ working_dir }}/data/raw
+output_dir: {{ working_dir }}/data/trimmed
+
+threads: 1
+{% if use_slurm == True %}
+ntasks: 1
+mem: 10gb
+{% endif %}
+
+adapter_3prime_R1: 
+adapter_5prime_R1: 
+{% if layout == 'pe' %}
+adapter_3prime_R2: 
+adapter_5prime_R2: 
+{% endif %}
+params: 

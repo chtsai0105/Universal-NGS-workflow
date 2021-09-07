@@ -1,0 +1,10 @@
+class: fasterq-dump
+program: fasterq-dump
+
+output_dir: {{ working_dir }}/data/raw
+
+threads: 1
+{% if use_slurm == True %}
+ntasks: 1
+mem: 10gb
+{% endif %}

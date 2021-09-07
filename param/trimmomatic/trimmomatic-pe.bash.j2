@@ -1,0 +1,33 @@
+#!/bin/bash
+{% if use_slurm == True %}
+#SBATCH --job-name={{ program }}
+#SBATCH --ntasks={{ ntasks }}
+#SBATCH --cpus-per-task={{ threads }}
+#SBATCH --mem={{ mem }}
+#SBATCH --array=1-{{ total_tasks }}%{{ ntasks }}
+#SBATCH --output=sbatch_log/%x_%A_%a.out
+{% endif %}
+
+METADATA={{ metadata }}
+INPUT_DIR={{ input_dir }}
+OUTPUT_DIR={{ output_dir }}
+UNPAIRED_DIR={{ unpaired_dir }}
+
+THREADS={{ threads }}
+
+mkdir -p $OUTPUT_DIR
+
+# Run trimmomatic
+sed -n '{{ line_start }},$p' $METADATA | \
+{% if use_slurm == True %}sed -n '$SLURM_ARRAY_TASK_ID{p;q;}' $METADATA | \{% endif %}
+while IFS="," read Accession R1 R2 Strain Condition Replicate
+do
+	sample=`echo $Strain $Condition $Replicate | tr ' ' '_'`
+
+	echo "Processing $sample ..."
+	trimmomatic PE	-threads $THREADS \
+					$INPUT_DIR/$R1 $INPUT_DIR/$R2 \
+					$OUTPUT_DIR/$R1 $UNPAIRED_DIR/$R1 \
+					$OUTPUT_DIR/$R2 $UNPAIRED_DIR/$R2 \
+					CROP:75 LEADING:10 TRAILING:10 SLIDINGWINDOW:4:15
+done
