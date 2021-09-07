@@ -1,10 +1,5 @@
-*
-!.gitignore
-
-!bin
-!*.bash
-!*.py
-!*.md
-!conda_env.yml
-
-!metadata.csv
+.ipynb_checkpoints
+.ipynb_checkpoints/*
+.vscode
+.vscode/*
+*.ipynb
