@@ -1,0 +1,56 @@
+1_fastqc:
+  class: fastqc
+  program: fastqc
+  input_dir: /rhome/ctsai085/Universal-NGS-workflow/data/raw
+  output_dir: /rhome/ctsai085/Universal-NGS-workflow/results/fastqc_raw
+  threads: 1
+  ntasks: 1
+  mem: 10gb
+2_cutadapt:
+  class: cutadapt
+  program: cutadapt
+  input_dir: /rhome/ctsai085/Universal-NGS-workflow/data/raw
+  output_dir: /rhome/ctsai085/Universal-NGS-workflow/data/raw
+  threads: 1
+  ntasks: 1
+  mem: 10gb
+  adapter_3prime_R1: null
+  adapter_5prime_R1: null
+  adapter_3prime_R2: null
+  adapter_5prime_R2: null
+  params: null
+3_trimmomatic-pe:
+  class: trimmomatic
+  program: trimmomatic-pe
+  input_dir: /rhome/ctsai085/Universal-NGS-workflow/data/raw
+  output_dir: /rhome/ctsai085/Universal-NGS-workflow/data/trimmed
+  unpaired_dir: /rhome/ctsai085/Universal-NGS-workflow/data/trimmed/unpaired
+  threads: 1
+  ntasks: 1
+  mem: 10gb
+4_fastqc:
+  class: fastqc
+  program: fastqc
+  input_dir: /rhome/ctsai085/Universal-NGS-workflow/data/raw
+  output_dir: /rhome/ctsai085/Universal-NGS-workflow/results/fastqc_raw
+  threads: 1
+  ntasks: 1
+  mem: 10gb
+5_salmon-index:
+  class: salmon
+  program: salmon-index
+  genome: /rhome/ctsai085/Universal-NGS-workflow/data/ref/genome.fa
+  txtome: /rhome/ctsai085/Universal-NGS-workflow/data/ref/txtome.fa
+  index: /rhome/ctsai085/Universal-NGS-workflow/data/salmon/salmon-idx
+  threads: 1
+  ntasks: 1
+  mem: 10gb
+6_salmon-pe:
+  class: salmon
+  program: salmon-pe
+  input_dir: /rhome/ctsai085/Universal-NGS-workflow/data/raw
+  output_dir: /rhome/ctsai085/Universal-NGS-workflow/data/salmon
+  index: /rhome/ctsai085/Universal-NGS-workflow/data/salmon/salmon-idx
+  threads: 1
+  ntasks: 1
+  mem: 10gb
