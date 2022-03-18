@@ -11,8 +11,9 @@ param:
   # True/False
 
 workflow:
-  - fastqc
-  - cutadapt
-  - trimmomatic
-  - fastqc
-  - salmon
+  - spades
+#  - fastqc
+#  - cutadapt
+#  - trimmomatic
+#  - fastqc
+#  - salmon
